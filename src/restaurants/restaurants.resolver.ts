@@ -127,7 +127,7 @@ export class DishResolver {
 
   @Mutation((type) => CreateDishOutput)
   @Role([UserRole.Owner])
-  craeteDish(
+  createDish(
     @AuthUser() owner: User,
     @Args("input") createDishInput: CreateDishInput
   ): Promise<CreateDishOutput> {
