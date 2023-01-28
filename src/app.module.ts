@@ -1,9 +1,4 @@
-import {
-  MiddlewareConsumer,
-  Module,
-  NestModule,
-  RequestMethod,
-} from "@nestjs/common";
+import { Module } from "@nestjs/common";
 // 타입 스크립트로 임포트  안되는 경우
 import * as Joi from "joi";
 import { GraphQLModule } from "@nestjs/graphql";
@@ -15,7 +10,6 @@ import { Restaurant } from "./restaurants/entities/restaurant.entity";
 import { UsersModule } from "./users/users.module";
 import { User } from "./users/entities/user.entity";
 import { JwtModule } from "./jwt/jwt.module";
-import { JwtMiddleware } from "./jwt/jwt.middleware";
 import { AuthModule } from "./auth/auth.module";
 import { Verification } from "./users/entities/verification.entity";
 import { MailModule } from "./mail/mail.module";
@@ -26,6 +20,9 @@ import { Order } from "./orders/entities/order.entity";
 import { OrderItem } from "./orders/entities/order-item.entity";
 import { Context } from "vm";
 import { CommonModule } from "./common/common.module";
+import { PaymentsModule } from "./payments/payments.module";
+import { Payment } from "./payments/entities/payment.entity";
+import { ScheduleModule } from "@nestjs/schedule";
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -63,6 +60,7 @@ import { CommonModule } from "./common/common.module";
         Dish,
         Order,
         OrderItem,
+        Payment,
       ],
     }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
@@ -79,6 +77,7 @@ import { CommonModule } from "./common/common.module";
       autoSchemaFile: true,
       context: ({ req }) => ({ token: req.headers["x-jwt"] }),
     }),
+    ScheduleModule.forRoot(),
     JwtModule.forRoot({
       privateKey: process.env.PRIVATE_KEY,
     }),
@@ -92,6 +91,7 @@ import { CommonModule } from "./common/common.module";
     }),
     RestaurantsModule,
     OrdersModule,
+    PaymentsModule,
   ],
   controllers: [],
   providers: [],
