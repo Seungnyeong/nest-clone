@@ -24,6 +24,8 @@ import { Dish } from "./restaurants/entities/dish.entity";
 import { OrdersModule } from "./orders/orders.module";
 import { Order } from "./orders/entities/order.entity";
 import { OrderItem } from "./orders/entities/order-item.entity";
+import { Context } from "vm";
+import { CommonModule } from "./common/common.module";
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -67,12 +69,20 @@ import { OrderItem } from "./orders/entities/order-item.entity";
       driver: ApolloDriver,
       debug: true,
       playground: true,
+      subscriptions: {
+        "subscriptions-transport-ws": {
+          onConnect: (connectionParams: Context) => {
+            return { token: connectionParams["x-jwt"] };
+          },
+        },
+      },
       autoSchemaFile: true,
-      context: ({ req }) => ({ user: req["user"] }),
+      context: ({ req }) => ({ token: req.headers["x-jwt"] }),
     }),
     JwtModule.forRoot({
       privateKey: process.env.PRIVATE_KEY,
     }),
+    CommonModule,
     UsersModule,
     AuthModule,
     MailModule.forRoot({
@@ -86,11 +96,4 @@ import { OrderItem } from "./orders/entities/order-item.entity";
   controllers: [],
   providers: [],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(JwtMiddleware).forRoutes({
-      path: "/graphql",
-      method: RequestMethod.POST,
-    });
-  }
-}
+export class AppModule {}
