@@ -169,7 +169,3 @@ export class DishResolver {
     return this.restaurantService.deleteDish(owner, deleteDishInput);
   }
 }
-
-// @Query(returns => null)
-// @Role([UserRole.Owner])
-// my
